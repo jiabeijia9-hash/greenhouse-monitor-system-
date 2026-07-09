@@ -11,32 +11,45 @@
     <div id="loginPage" class="login-page">
         <div class="login-card">
             <button class="login-close" onclick="window.close()">✕</button>
+            <div class="login-logo">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <defs>
+                        <linearGradient id="leafGrad" x1="0" y1="0" x2="48" y2="48">
+                            <stop offset="0%" stop-color="#34c759"/>
+                            <stop offset="100%" stop-color="#007aff"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="48" height="48" rx="12" fill="url(#leafGrad)"/>
+                    <path d="M24 14c0 0-8 4-8 12c0 5 3.6 9 8 9s8-4 8-9c0-8-8-12-8-12z" fill="rgba(255,255,255,0.95)"/>
+                    <path d="M24 14v20M24 22c-3-1-6 0-7 1M24 26c3 1 6 0 7-1" stroke="rgba(0,122,255,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+            </div>
             <h2 class="login-title">温室监控系统</h2>
             <p class="login-subtitle">登录以继续使用</p>
-            
+
             <div class="login-field">
                 <label>账号</label>
                 <div class="input-wrapper">
                     <input type="text" id="loginUsername" placeholder="请输入账号">
                 </div>
             </div>
-            
+
             <div class="login-field">
                 <label>密码</label>
                 <div class="input-wrapper">
                     <input type="password" id="loginPassword" placeholder="请输入密码">
                 </div>
             </div>
-            
+
             <div class="login-show-pwd">
                 <label class="checkbox-label">
                     <input type="checkbox" id="showLoginPassword">
                     <span>显示密码</span>
                 </label>
             </div>
-            
+
             <button id="loginBtn" class="login-btn">登录</button>
-            
+
             <p id="loginMessage" class="login-message">默认账号: qwe  密码: 123</p>
         </div>
     </div>
@@ -46,208 +59,252 @@
             <button class="modal-close" onclick="closeChangePasswordModal()">✕</button>
             <h3 class="modal-title">修改密码</h3>
             <p class="modal-subtitle">请输入当前密码并设置新密码</p>
-            
+
             <div class="modal-field">
                 <label>当前密码</label>
                 <div class="input-wrapper">
                     <input type="password" id="oldPassword" placeholder="请输入当前密码">
                 </div>
             </div>
-            
+
             <div class="modal-field">
                 <label>新密码</label>
                 <div class="input-wrapper">
                     <input type="password" id="newPassword" placeholder="请输入新密码">
                 </div>
             </div>
-            
+
             <div class="modal-field">
                 <label>确认新密码</label>
                 <div class="input-wrapper">
                     <input type="password" id="confirmPassword" placeholder="请再次输入新密码">
                 </div>
             </div>
-            
+
             <div class="modal-show-pwd">
                 <label class="checkbox-label">
                     <input type="checkbox" id="showModalPassword">
                     <span>显示密码</span>
                 </label>
             </div>
-            
+
             <button id="confirmChangePwdBtn" class="modal-btn">更新密码</button>
             <button class="modal-btn cancel" onclick="closeChangePasswordModal()">取消</button>
-            
+
             <p id="changePwdMessage" class="modal-message"></p>
         </div>
     </div>
 
     <div class="app-container">
-        <header class="title-bar">
-            <div class="traffic-lights">
-                <button class="traffic-light close" onclick="window.close()"></button>
-                <button class="traffic-light minimize" onclick="minimizeWindow()"></button>
-                <button class="traffic-light maximize" onclick="maximizeWindow()"></button>
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <defs>
+                            <linearGradient id="leafGradSm" x1="0" y1="0" x2="32" y2="32">
+                                <stop offset="0%" stop-color="#34c759"/>
+                                <stop offset="100%" stop-color="#007aff"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="32" height="32" rx="8" fill="url(#leafGradSm)"/>
+                        <path d="M16 10c0 0-5 3-5 8c0 3.3 2.4 6 5 6s5-2.7 5-6c0-5-5-8-5-8z" fill="rgba(255,255,255,0.95)"/>
+                        <path d="M16 10v13M16 15c-2-.7-4 0-5 .7M16 18c2 .7 4 0 5-.7" stroke="rgba(0,122,255,0.5)" stroke-width="1" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <span class="sidebar-title">温室监控</span>
             </div>
-            <h1 class="title">温室环境实时监测系统</h1>
-        </header>
-
-        <div class="main-content">
-            <nav class="sidebar">
+            <nav class="sidebar-nav">
                 <button class="nav-item active" data-panel="commPanel">
-                    <span class="nav-icon">⚙️</span>
-                    <span class="nav-text">通讯模块</span>
+                    <svg class="nav-svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7 4l-3 3 3 3M13 4l3 3-3 3M4 7h12M4 13v3a1 1 0 001 1h10a1 1 0 001-1v-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
                 <button class="nav-item" data-panel="paramPanel">
-                    <span class="nav-icon">📋</span>
-                    <span class="nav-text">系统参数设置</span>
+                    <svg class="nav-svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V5zM3 13a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zM6 6.5h.01M6 14.5h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                 </button>
                 <button class="nav-item" data-panel="realtimePanel">
-                    <span class="nav-icon">📊</span>
-                    <span class="nav-text">实时数据显示</span>
+                    <svg class="nav-svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 10h3l3-6 4 12 3-6h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
                 <button class="nav-item" data-panel="historyPanel">
-                    <span class="nav-icon">📜</span>
-                    <span class="nav-text">历史数据查询</span>
+                    <svg class="nav-svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 7h14M7 11h6M7 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
             </nav>
+        </aside>
 
-            <main class="content-area">
+        <main class="content-area">
+            <header class="top-bar">
+                <h1 class="page-title" id="pageTitle">通讯模块</h1>
+                <div class="top-bar-right">
+                    <span class="connection-pill">
+                        <span class="connection-dot" id="connDot"></span>
+                        <span id="connStatus">未连接</span>
+                    </span>
+                </div>
+            </header>
+
+            <div class="panel-container">
                 <div id="commPanel" class="panel active">
-                    <h2 class="panel-title">串口参数配置</h2>
-                    
-                    <div class="card">
-                        <div class="form-row">
-                            <label>串口端口</label>
-                            <select id="portSelect">
-                                <option value="">请选择串口</option>
-                            </select>
+                    <div class="section-header">
+                        <h2 class="section-title">串口参数配置</h2>
+                    </div>
+
+                    <div class="comm-layout">
+                        <div class="card comm-config-card">
+                            <div class="form-grid form-grid-vertical">
+                                <div class="form-field">
+                                    <label>串口端口</label>
+                                    <select id="portSelect">
+                                        <option value="">请选择串口</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label>波特率</label>
+                                    <select id="baudRateSelect">
+                                        <option value="4800">4800</option>
+                                        <option value="9600" selected>9600</option>
+                                        <option value="14400">14400</option>
+                                        <option value="19200">19200</option>
+                                        <option value="38400">38400</option>
+                                        <option value="57600">57600</option>
+                                        <option value="115200">115200</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label>数据位</label>
+                                    <select id="dataBitsSelect">
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8" selected>8</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label>停止位</label>
+                                    <select id="stopBitsSelect">
+                                        <option value="1" selected>1</option>
+                                        <option value="1.5">1.5</option>
+                                        <option value="2">2</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label>校验位</label>
+                                    <select id="paritySelect">
+                                        <option value="none" selected>无</option>
+                                        <option value="odd">奇校验</option>
+                                        <option value="even">偶校验</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-row">
-                            <label>波特率</label>
-                            <select id="baudRateSelect">
-                                <option value="4800">4800</option>
-                                <option value="9600" selected>9600</option>
-                                <option value="14400">14400</option>
-                                <option value="19200">19200</option>
-                                <option value="38400">38400</option>
-                                <option value="57600">57600</option>
-                                <option value="115200">115200</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label>数据位</label>
-                            <select id="dataBitsSelect">
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8" selected>8</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label>停止位</label>
-                            <select id="stopBitsSelect">
-                                <option value="1" selected>1</option>
-                                <option value="1.5">1.5</option>
-                                <option value="2">2</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label>校验位</label>
-                            <select id="paritySelect">
-                                <option value="none" selected>无</option>
-                                <option value="odd">奇校验</option>
-                                <option value="even">偶校验</option>
-                            </select>
-                        </div>
-                        <div class="form-row status-row">
-                            <label>连接状态</label>
-                            <span id="connStatus" class="status-badge">未连接</span>
+
+                        <div class="card comm-log-card">
+                            <div class="card-header">
+                                <h3 class="card-title">串口接收数据</h3>
+                                <button id="clearLogBtn" class="btn-text">清空</button>
+                            </div>
+                            <div id="logContainer" class="log-container log-container-tall"></div>
                         </div>
                     </div>
 
-                    <div class="card log-card">
-                        <h3 class="card-title">串口接收数据</h3>
-                        <div id="logContainer" class="log-container"></div>
-                    </div>
-
-                    <div class="button-group">
+                    <div class="action-bar">
                         <button id="openSerialBtn" class="btn primary">打开串口</button>
-                        <button id="closeSerialBtn" class="btn">关闭串口</button>
-                        <button id="clearLogBtn" class="btn">清空日志</button>
+                        <button id="closeSerialBtn" class="btn secondary">关闭串口</button>
                     </div>
                 </div>
 
                 <div id="paramPanel" class="panel">
-                    <h2 class="panel-title">监测参数配置</h2>
-                    
+                    <div class="section-header">
+                        <h2 class="section-title">监测参数配置</h2>
+                    </div>
+
                     <div class="card">
-                        <h3 class="card-title">温度阈值设置</h3>
-                        <div class="form-row">
-                            <label>温度上限阈值</label>
-                            <input type="number" id="maxTempInput" value="50" min="-40" max="100">
-                            <span class="hint">超过上限将触发告警</span>
+                        <div class="card-header">
+                            <h3 class="card-title">温度阈值设置</h3>
                         </div>
-                        <div class="form-row">
-                            <label>温度下限阈值</label>
-                            <input type="number" id="minTempInput" value="-40" min="-40" max="100">
-                            <span class="hint">低于下限将触发告警</span>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label>温度上限阈值</label>
+                                <input type="number" id="maxTempInput" value="50" min="-40" max="100">
+                                <span class="field-hint">超过上限将触发告警</span>
+                            </div>
+                            <div class="form-field">
+                                <label>温度下限阈值</label>
+                                <input type="number" id="minTempInput" value="-40" min="-40" max="100">
+                                <span class="field-hint">低于下限将触发告警</span>
+                            </div>
                         </div>
                     </div>
 
                     <div class="card">
-                        <h3 class="card-title">采样采集间隔</h3>
+                        <div class="card-header">
+                            <h3 class="card-title">采样采集间隔</h3>
+                            <span id="intervalValue" class="badge-blue">10秒</span>
+                        </div>
                         <div class="slider-row">
                             <input type="range" id="intervalSlider" min="1" max="60" value="10">
-                            <span id="intervalValue" class="slider-value">10秒</span>
                         </div>
-                        <span class="hint">倒计时模式下自动采集数据</span>
+                        <span class="field-hint">倒计时模式下自动采集数据</span>
                     </div>
 
-                    <div class="button-group">
-                        <button id="saveParamBtn" class="btn">保存参数</button>
+                    <div class="action-bar">
+                        <button id="saveParamBtn" class="btn secondary">保存参数</button>
                         <button id="restoreDefaultBtn" class="btn primary">恢复默认</button>
-                        <button id="changePasswordBtn" class="btn outline">修改密码</button>
+                        <button id="changePasswordBtn" class="btn ghost">修改密码</button>
                     </div>
                 </div>
 
                 <div id="realtimePanel" class="panel">
-                    <div class="card realtime-card">
-                        <div class="temp-display">
-                            <span id="temperatureValue">--</span>
-                            <span class="temp-unit">℃</span>
-                        </div>
-                        
-                        <div class="meter-container">
-                            <canvas id="thermometerCanvas"></canvas>
-                        </div>
+                    <div class="section-header">
+                        <h2 class="section-title">实时数据显示</h2>
+                    </div>
 
-                        <div class="chart-container">
-                            <canvas id="lineChart"></canvas>
-                        </div>
-
-                        <div class="realtime-footer">
-                            <div class="status-indicator">
-                                <span class="status-label">状态</span>
-                                <span id="realtimeStatus" class="status-value">运行中</span>
+                    <div class="realtime-grid">
+                        <div class="card stat-card">
+                            <span class="stat-label">当前温度</span>
+                            <div class="temp-display">
+                                <span id="temperatureValue" class="temp-value">--</span>
+                                <span class="temp-unit">℃</span>
                             </div>
-                            <button id="saveDataBtn" class="btn">保存数据</button>
+                            <div class="status-indicator">
+                                <span class="status-dot"></span>
+                                <span id="realtimeStatus" class="status-text">运行中</span>
+                            </div>
+                        </div>
+
+                        <div class="card meter-card">
+                            <div class="card-header">
+                                <h3 class="card-title">温度仪表</h3>
+                            </div>
+                            <div class="meter-container">
+                                <canvas id="thermometerCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h3 class="card-title">温度趋势图</h3>
+                            <button id="saveDataBtn" class="btn-text">保存数据</button>
+                        </div>
+                        <div class="chart-wrap">
+                            <canvas id="lineChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <div id="historyPanel" class="panel">
-                    <div class="history-header">
-                        <button id="segNormal" class="segment-btn active">正常历史监测数据</button>
-                        <button id="segAlarm" class="segment-btn">异常告警数据</button>
-                        
+                    <div class="section-header">
+                        <h2 class="section-title">历史数据查询</h2>
                         <div class="search-box">
                             <input type="text" id="searchInput" placeholder="搜索...">
-                            <button id="queryBtn" class="btn outline">查询</button>
+                            <button id="queryBtn" class="btn-text">查询</button>
                         </div>
                     </div>
 
-                    <div class="card">
+                    <div class="segment-bar">
+                        <button id="segNormal" class="segment-btn active">正常历史监测数据</button>
+                        <button id="segAlarm" class="segment-btn">异常告警数据</button>
+                    </div>
+
+                    <div class="card table-card">
                         <table id="historyTable" class="data-table">
                             <thead>
                                 <tr>
@@ -261,13 +318,13 @@
                     </div>
 
                     <div class="pagination">
-                        <button id="prevPageBtn" class="btn" disabled>上一页</button>
-                        <span id="pageInfo">第 1 / 1 页</span>
-                        <button id="nextPageBtn" class="btn" disabled>下一页</button>
+                        <button id="prevPageBtn" class="btn secondary" disabled>上一页</button>
+                        <span id="pageInfo" class="page-info">第 1 / 1 页</span>
+                        <button id="nextPageBtn" class="btn secondary" disabled>下一页</button>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
 
     <script src="app.js"></script>

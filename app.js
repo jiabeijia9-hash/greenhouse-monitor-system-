@@ -14,6 +14,14 @@ let alarmUtterance = null;
 
 const navItems = document.querySelectorAll('.nav-item');
 const panels = document.querySelectorAll('.panel');
+const pageTitleEl = document.getElementById('pageTitle');
+
+const panelTitles = {
+    commPanel: '通讯模块',
+    paramPanel: '系统参数设置',
+    realtimePanel: '实时数据显示',
+    historyPanel: '历史数据查询'
+};
 
 navItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -22,7 +30,8 @@ navItems.forEach(item => {
         item.classList.add('active');
         const panelId = item.getAttribute('data-panel');
         document.getElementById(panelId).classList.add('active');
-        
+        if (pageTitleEl) pageTitleEl.textContent = panelTitles[panelId] || '';
+
         if (panelId === 'historyPanel') {
             refreshHistoryGrid();
         }
@@ -117,9 +126,11 @@ async function openSerial() {
             } else {
                 appendLog(`设备验证成功，检测到温控设备（温度：${handshakeTemp.toFixed(1)}℃）`);
                 connStatus.textContent = '已连接';
-                connStatus.classList.add('connected');
+                const connDot = document.getElementById('connDot');
+                if (connDot) connDot.classList.add('connected');
                 openSerialBtn.textContent = '关闭串口';
                 openSerialBtn.classList.remove('primary');
+                openSerialBtn.classList.add('secondary');
                 
                 startAlarmCheck();
             }
@@ -148,9 +159,11 @@ async function closeSerial() {
     }
     
     connStatus.textContent = '未连接';
-    connStatus.classList.remove('connected');
+    const connDot = document.getElementById('connDot');
+    if (connDot) connDot.classList.remove('connected');
     openSerialBtn.textContent = '打开串口';
     openSerialBtn.classList.add('primary');
+    openSerialBtn.classList.remove('secondary');
     
     stopAlarmCheck();
 }
@@ -256,7 +269,7 @@ function initCharts() {
                 label: '温度',
                 data: [],
                 borderColor: '#007aff',
-                backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                backgroundColor: 'rgba(0, 122, 255, 0.08)',
                 borderWidth: 2,
                 fill: true,
                 tension: 0.5,
@@ -275,7 +288,11 @@ function initCharts() {
                     ticks: { maxTicksLimit: 10 }
                 },
                 y: {
-                    beginAtZero: false
+                    min: MinTemperatureValue - 5,
+                    max: MaxTemperatureValue + 5,
+                    ticks: {
+                        callback: function(value) { return value + '℃'; }
+                    }
                 }
             }
         }
@@ -364,9 +381,7 @@ restoreDefaultBtn.addEventListener('click', () => {
     appendLog('已恢复默认参数');
 });
 
-changePasswordBtn.addEventListener('click', () => {
-    alert('密码修改功能在网页版本中暂不可用');
-});
+changePasswordBtn.addEventListener('click', openChangePasswordModal);
 
 const saveDataBtn = document.getElementById('saveDataBtn');
 
@@ -514,27 +529,6 @@ function refreshHistoryGrid() {
     pageInfo.textContent = `第 ${currentPage} / ${totalPages} 页`;
     prevPageBtn.disabled = currentPage <= 1;
     nextPageBtn.disabled = currentPage >= totalPages;
-}
-
-function minimizeWindow() {
-    if (window.chrome && window.chrome.app && window.chrome.app.window) {
-        chrome.app.window.current().minimize();
-    } else {
-        console.log('Minimize not supported in this environment');
-    }
-}
-
-function maximizeWindow() {
-    if (window.chrome && window.chrome.app && window.chrome.app.window) {
-        const win = chrome.app.window.current();
-        if (win.isMaximized()) {
-            win.restore();
-        } else {
-            win.maximize();
-        }
-    } else {
-        console.log('Maximize not supported in this environment');
-    }
 }
 
 const AuthService = {
