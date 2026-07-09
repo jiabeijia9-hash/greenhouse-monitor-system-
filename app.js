@@ -541,7 +541,245 @@ function maximizeWindow() {
     }
 }
 
+const AuthService = {
+    DEFAULT_USERNAME: 'qwe',
+    DEFAULT_PASSWORD: '123',
+    STORAGE_KEY: 'greenhouse_auth',
+    MAX_ATTEMPTS: 5,
+
+    _username: null,
+    _passwordHash: null,
+
+    init() {
+        const saved = localStorage.getItem(this.STORAGE_KEY);
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                this._username = data.username;
+                this._passwordHash = data.passwordHash;
+                return;
+            } catch (e) {}
+        }
+        this._username = this.DEFAULT_USERNAME;
+        this._hashPassword(this.DEFAULT_PASSWORD).then(hash => {
+            this._passwordHash = hash;
+            this._save();
+        });
+    },
+
+    async _hashPassword(password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    },
+
+    async login(username, password) {
+        if (!username || !password) return false;
+        if (username !== this._username) return false;
+        const hash = await this._hashPassword(password);
+        return hash === this._passwordHash;
+    },
+
+    async changePassword(oldPassword, newPassword) {
+        if (!oldPassword || !newPassword) {
+            return { success: false, error: '旧密码和新密码不能为空' };
+        }
+        if (newPassword.length < 3) {
+            return { success: false, error: '新密码长度不能少于3位' };
+        }
+        const oldHash = await this._hashPassword(oldPassword);
+        if (oldHash !== this._passwordHash) {
+            return { success: false, error: '旧密码不正确' };
+        }
+        if (oldPassword === newPassword) {
+            return { success: false, error: '新密码不能与旧密码相同' };
+        }
+        this._passwordHash = await this._hashPassword(newPassword);
+        this._save();
+        return { success: true };
+    },
+
+    _save() {
+        const data = {
+            username: this._username,
+            passwordHash: this._passwordHash
+        };
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+    }
+};
+
+let loginAttempts = 0;
+
+function showLoginMessage(message, type = '') {
+    const msg = document.getElementById('loginMessage');
+    msg.textContent = message;
+    msg.className = 'login-message' + (type ? ' ' + type : '');
+}
+
+async function handleLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const btn = document.getElementById('loginBtn');
+
+    if (!username || !password) {
+        showLoginMessage('请输入账号和密码', 'error');
+        return;
+    }
+
+    if (loginAttempts >= AuthService.MAX_ATTEMPTS) {
+        showLoginMessage('登录失败次数过多，请刷新页面重试', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '验证中...';
+
+    const success = await AuthService.login(username, password);
+
+    if (success) {
+        showLoginMessage('登录成功', 'success');
+        setTimeout(() => {
+            document.getElementById('loginPage').classList.add('hidden');
+            loginAttempts = 0;
+        }, 400);
+    } else {
+        loginAttempts++;
+        const remaining = AuthService.MAX_ATTEMPTS - loginAttempts;
+        showLoginMessage(`账号或密码错误（剩余 ${remaining} 次）`, 'error');
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('loginPassword').focus();
+    }
+
+    btn.disabled = false;
+    btn.textContent = '登录';
+}
+
+function toggleLoginPassword() {
+    const checkbox = document.getElementById('showLoginPassword');
+    const pwdInput = document.getElementById('loginPassword');
+    pwdInput.type = checkbox.checked ? 'text' : 'password';
+}
+
+function openChangePasswordModal() {
+    document.getElementById('changePasswordModal').classList.add('show');
+    document.getElementById('oldPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    document.getElementById('showModalPassword').checked = false;
+    toggleModalPassword();
+    showChangePwdMessage('');
+    document.getElementById('oldPassword').focus();
+}
+
+function closeChangePasswordModal() {
+    document.getElementById('changePasswordModal').classList.remove('show');
+}
+
+function toggleModalPassword() {
+    const checkbox = document.getElementById('showModalPassword');
+    const type = checkbox.checked ? 'text' : 'password';
+    document.getElementById('oldPassword').type = type;
+    document.getElementById('newPassword').type = type;
+    document.getElementById('confirmPassword').type = type;
+}
+
+function showChangePwdMessage(message, type = '') {
+    const msg = document.getElementById('changePwdMessage');
+    msg.textContent = message;
+    msg.className = 'modal-message' + (type ? ' ' + type : '');
+}
+
+async function handleChangePassword() {
+    const oldPwd = document.getElementById('oldPassword').value;
+    const newPwd = document.getElementById('newPassword').value;
+    const confirmPwd = document.getElementById('confirmPassword').value;
+    const btn = document.getElementById('confirmChangePwdBtn');
+
+    if (!oldPwd) {
+        showChangePwdMessage('请输入当前密码', 'error');
+        document.getElementById('oldPassword').focus();
+        return;
+    }
+    if (!newPwd) {
+        showChangePwdMessage('请输入新密码', 'error');
+        document.getElementById('newPassword').focus();
+        return;
+    }
+    if (newPwd.length < 3) {
+        showChangePwdMessage('新密码至少需要 3 个字符', 'error');
+        document.getElementById('newPassword').focus();
+        return;
+    }
+    if (newPwd !== confirmPwd) {
+        showChangePwdMessage('两次输入的新密码不一致', 'error');
+        document.getElementById('confirmPassword').focus();
+        return;
+    }
+    if (oldPwd === newPwd) {
+        showChangePwdMessage('新密码不能与当前密码相同', 'warning');
+        document.getElementById('newPassword').focus();
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '处理中...';
+
+    const result = await AuthService.changePassword(oldPwd, newPwd);
+
+    if (result.success) {
+        showChangePwdMessage('密码已更新', 'success');
+        setTimeout(() => {
+            closeChangePasswordModal();
+            alert('密码修改成功，请使用新密码重新登录。');
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginUsername').value = AuthService.DEFAULT_USERNAME;
+            appendLog('密码已修改，请重新登录');
+        }, 600);
+    } else {
+        showChangePwdMessage(result.error, 'error');
+        document.getElementById('oldPassword').value = '';
+        document.getElementById('oldPassword').focus();
+    }
+
+    btn.disabled = false;
+    btn.textContent = '更新密码';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    AuthService.init();
     initCharts();
+
+    document.getElementById('loginBtn').addEventListener('click', handleLogin);
+    document.getElementById('showLoginPassword').addEventListener('change', toggleLoginPassword);
+    document.getElementById('loginUsername').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+    });
+    document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
+
+    document.getElementById('changePasswordBtn').addEventListener('click', openChangePasswordModal);
+    document.getElementById('confirmChangePwdBtn').addEventListener('click', handleChangePassword);
+    document.getElementById('showModalPassword').addEventListener('change', toggleModalPassword);
+
+    document.getElementById('oldPassword').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('newPassword').focus();
+    });
+    document.getElementById('newPassword').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('confirmPassword').focus();
+    });
+    document.getElementById('confirmPassword').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleChangePassword();
+    });
+
+    document.getElementById('changePasswordModal').addEventListener('click', (e) => {
+        if (e.target.id === 'changePasswordModal') {
+            closeChangePasswordModal();
+        }
+    });
+
     appendLog('系统启动完成，等待连接...');
 });

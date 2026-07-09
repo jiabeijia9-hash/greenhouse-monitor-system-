@@ -8,6 +8,80 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <div id="loginPage" class="login-page">
+        <div class="login-card">
+            <button class="login-close" onclick="window.close()">✕</button>
+            <h2 class="login-title">温室监控系统</h2>
+            <p class="login-subtitle">登录以继续使用</p>
+            
+            <div class="login-field">
+                <label>账号</label>
+                <div class="input-wrapper">
+                    <input type="text" id="loginUsername" placeholder="请输入账号">
+                </div>
+            </div>
+            
+            <div class="login-field">
+                <label>密码</label>
+                <div class="input-wrapper">
+                    <input type="password" id="loginPassword" placeholder="请输入密码">
+                </div>
+            </div>
+            
+            <div class="login-show-pwd">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="showLoginPassword">
+                    <span>显示密码</span>
+                </label>
+            </div>
+            
+            <button id="loginBtn" class="login-btn">登录</button>
+            
+            <p id="loginMessage" class="login-message">默认账号: qwe  密码: 123</p>
+        </div>
+    </div>
+
+    <div id="changePasswordModal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeChangePasswordModal()">✕</button>
+            <h3 class="modal-title">修改密码</h3>
+            <p class="modal-subtitle">请输入当前密码并设置新密码</p>
+            
+            <div class="modal-field">
+                <label>当前密码</label>
+                <div class="input-wrapper">
+                    <input type="password" id="oldPassword" placeholder="请输入当前密码">
+                </div>
+            </div>
+            
+            <div class="modal-field">
+                <label>新密码</label>
+                <div class="input-wrapper">
+                    <input type="password" id="newPassword" placeholder="请输入新密码">
+                </div>
+            </div>
+            
+            <div class="modal-field">
+                <label>确认新密码</label>
+                <div class="input-wrapper">
+                    <input type="password" id="confirmPassword" placeholder="请再次输入新密码">
+                </div>
+            </div>
+            
+            <div class="modal-show-pwd">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="showModalPassword">
+                    <span>显示密码</span>
+                </label>
+            </div>
+            
+            <button id="confirmChangePwdBtn" class="modal-btn">更新密码</button>
+            <button class="modal-btn cancel" onclick="closeChangePasswordModal()">取消</button>
+            
+            <p id="changePwdMessage" class="modal-message"></p>
+        </div>
+    </div>
+
     <div class="app-container">
         <header class="title-bar">
             <div class="traffic-lights">
