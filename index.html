@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>温室监控系统</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="title-bar">
+            <div class="traffic-lights">
+                <button class="traffic-light close" onclick="window.close()"></button>
+                <button class="traffic-light minimize" onclick="minimizeWindow()"></button>
+                <button class="traffic-light maximize" onclick="maximizeWindow()"></button>
+            </div>
+            <h1 class="title">温室环境实时监测系统</h1>
+        </header>
+
+        <div class="main-content">
+            <nav class="sidebar">
+                <button class="nav-item active" data-panel="commPanel">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">通讯模块</span>
+                </button>
+                <button class="nav-item" data-panel="paramPanel">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">系统参数设置</span>
+                </button>
+                <button class="nav-item" data-panel="realtimePanel">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">实时数据显示</span>
+                </button>
+                <button class="nav-item" data-panel="historyPanel">
+                    <span class="nav-icon">📜</span>
+                    <span class="nav-text">历史数据查询</span>
+                </button>
+            </nav>
+
+            <main class="content-area">
+                <div id="commPanel" class="panel active">
+                    <h2 class="panel-title">串口参数配置</h2>
+                    
+                    <div class="card">
+                        <div class="form-row">
+                            <label>串口端口</label>
+                            <select id="portSelect">
+                                <option value="">请选择串口</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>波特率</label>
+                            <select id="baudRateSelect">
+                                <option value="4800">4800</option>
+                                <option value="9600" selected>9600</option>
+                                <option value="14400">14400</option>
+                                <option value="19200">19200</option>
+                                <option value="38400">38400</option>
+                                <option value="57600">57600</option>
+                                <option value="115200">115200</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>数据位</label>
+                            <select id="dataBitsSelect">
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8" selected>8</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>停止位</label>
+                            <select id="stopBitsSelect">
+                                <option value="1" selected>1</option>
+                                <option value="1.5">1.5</option>
+                                <option value="2">2</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>校验位</label>
+                            <select id="paritySelect">
+                                <option value="none" selected>无</option>
+                                <option value="odd">奇校验</option>
+                                <option value="even">偶校验</option>
+                            </select>
+                        </div>
+                        <div class="form-row status-row">
+                            <label>连接状态</label>
+                            <span id="connStatus" class="status-badge">未连接</span>
+                        </div>
+                    </div>
+
+                    <div class="card log-card">
+                        <h3 class="card-title">串口接收数据</h3>
+                        <div id="logContainer" class="log-container"></div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="openSerialBtn" class="btn primary">打开串口</button>
+                        <button id="closeSerialBtn" class="btn">关闭串口</button>
+                        <button id="clearLogBtn" class="btn">清空日志</button>
+                    </div>
+                </div>
+
+                <div id="paramPanel" class="panel">
+                    <h2 class="panel-title">监测参数配置</h2>
+                    
+                    <div class="card">
+                        <h3 class="card-title">温度阈值设置</h3>
+                        <div class="form-row">
+                            <label>温度上限阈值</label>
+                            <input type="number" id="maxTempInput" value="50" min="-40" max="100">
+                            <span class="hint">超过上限将触发告警</span>
+                        </div>
+                        <div class="form-row">
+                            <label>温度下限阈值</label>
+                            <input type="number" id="minTempInput" value="-40" min="-40" max="100">
+                            <span class="hint">低于下限将触发告警</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">采样采集间隔</h3>
+                        <div class="slider-row">
+                            <input type="range" id="intervalSlider" min="1" max="60" value="10">
+                            <span id="intervalValue" class="slider-value">10秒</span>
+                        </div>
+                        <span class="hint">倒计时模式下自动采集数据</span>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="saveParamBtn" class="btn">保存参数</button>
+                        <button id="restoreDefaultBtn" class="btn primary">恢复默认</button>
+                        <button id="changePasswordBtn" class="btn outline">修改密码</button>
+                    </div>
+                </div>
+
+                <div id="realtimePanel" class="panel">
+                    <div class="card realtime-card">
+                        <div class="temp-display">
+                            <span id="temperatureValue">--</span>
+                            <span class="temp-unit">℃</span>
+                        </div>
+                        
+                        <div class="meter-container">
+                            <canvas id="thermometerCanvas"></canvas>
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="lineChart"></canvas>
+                        </div>
+
+                        <div class="realtime-footer">
+                            <div class="status-indicator">
+                                <span class="status-label">状态</span>
+                                <span id="realtimeStatus" class="status-value">运行中</span>
+                            </div>
+                            <button id="saveDataBtn" class="btn">保存数据</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="historyPanel" class="panel">
+                    <div class="history-header">
+                        <button id="segNormal" class="segment-btn active">正常历史监测数据</button>
+                        <button id="segAlarm" class="segment-btn">异常告警数据</button>
+                        
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="搜索...">
+                            <button id="queryBtn" class="btn outline">查询</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <table id="historyTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>温度</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination">
+                        <button id="prevPageBtn" class="btn" disabled>上一页</button>
+                        <span id="pageInfo">第 1 / 1 页</span>
+                        <button id="nextPageBtn" class="btn" disabled>下一页</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
