@@ -243,10 +243,6 @@ function initCharts() {
             plugins: {
                 tooltip: { enabled: false },
                 legend: { display: false }
-            },
-            scales: {
-                ticks: { display: false },
-                grid: { display: false }
             }
         }
     });
@@ -549,22 +545,27 @@ const AuthService = {
 
     _username: null,
     _passwordHash: null,
+    _initPromise: null,
 
     init() {
-        const saved = localStorage.getItem(this.STORAGE_KEY);
-        if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                this._username = data.username;
-                this._passwordHash = data.passwordHash;
-                return;
-            } catch (e) {}
-        }
-        this._username = this.DEFAULT_USERNAME;
-        this._hashPassword(this.DEFAULT_PASSWORD).then(hash => {
-            this._passwordHash = hash;
+        if (this._initPromise) return this._initPromise;
+        
+        this._initPromise = (async () => {
+            const saved = localStorage.getItem(this.STORAGE_KEY);
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    this._username = data.username;
+                    this._passwordHash = data.passwordHash;
+                    return;
+                } catch (e) {}
+            }
+            this._username = this.DEFAULT_USERNAME;
+            this._passwordHash = await this._hashPassword(this.DEFAULT_PASSWORD);
             this._save();
-        });
+        }).call(this);
+        
+        return this._initPromise;
     },
 
     async _hashPassword(password) {
@@ -578,6 +579,9 @@ const AuthService = {
     async login(username, password) {
         if (!username || !password) return false;
         if (username !== this._username) return false;
+        if (!this._passwordHash) {
+            await this.init();
+        }
         const hash = await this._hashPassword(password);
         return hash === this._passwordHash;
     },
@@ -636,20 +640,28 @@ async function handleLogin() {
     btn.disabled = true;
     btn.textContent = '验证中...';
 
-    const success = await AuthService.login(username, password);
+    try {
+        const success = await AuthService.login(username, password);
 
-    if (success) {
-        showLoginMessage('登录成功', 'success');
-        setTimeout(() => {
-            document.getElementById('loginPage').classList.add('hidden');
-            loginAttempts = 0;
-        }, 400);
-    } else {
-        loginAttempts++;
-        const remaining = AuthService.MAX_ATTEMPTS - loginAttempts;
-        showLoginMessage(`账号或密码错误（剩余 ${remaining} 次）`, 'error');
-        document.getElementById('loginPassword').value = '';
-        document.getElementById('loginPassword').focus();
+        if (success) {
+            showLoginMessage('登录成功', 'success');
+            setTimeout(() => {
+                document.getElementById('loginPage').classList.add('hidden');
+                loginAttempts = 0;
+                btn.disabled = false;
+                btn.textContent = '登录';
+            }, 400);
+            return;
+        } else {
+            loginAttempts++;
+            const remaining = AuthService.MAX_ATTEMPTS - loginAttempts;
+            showLoginMessage(`账号或密码错误（剩余 ${remaining} 次）`, 'error');
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginPassword').focus();
+        }
+    } catch (e) {
+        console.error('Login error:', e);
+        showLoginMessage('登录出错，请重试', 'error');
     }
 
     btn.disabled = false;
@@ -748,7 +760,7 @@ async function handleChangePassword() {
     btn.textContent = '更新密码';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+(function init() {
     AuthService.init();
     initCharts();
 
@@ -782,4 +794,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     appendLog('系统启动完成，等待连接...');
-});
+})();
