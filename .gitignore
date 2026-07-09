@@ -1,0 +1,19 @@
+# Keil MDK / uVision 编译产物
+Listings/
+Objects/
+*.build_log.htm
+*.lnp
+*.hex
+*.m51
+*.lst
+*.obj
+
+# 编译日志
+build.log
+
+# Keil 用户个人界面配置(每个开发者本地不同)
+*.uvgui.*
+*.uvopt
+
+# 备份文件
+*.bak
